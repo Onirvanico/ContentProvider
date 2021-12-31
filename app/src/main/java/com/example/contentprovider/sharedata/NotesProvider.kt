@@ -15,6 +15,7 @@ class NotesProvider : ContentProvider() {
 
     private lateinit var uriMatcher: UriMatcher
     private lateinit var db: NotesDataBaseHelp
+
     companion object {
         const val AUTHORITY = "com.example.contentprovider.provider"
         val BASE_URI = Uri.parse("content://$AUTHORITY")
@@ -35,7 +36,7 @@ class NotesProvider : ContentProvider() {
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         if(uriMatcher.match(uri) == NOTE_BY_ID) {
             val wrDB = db.writableDatabase
-            var linesAffect = wrDB.delete(TABLE_NOTES, "$_ID = ?", arrayOf(uri.lastPathSegment))
+            val linesAffect = wrDB.delete(TABLE_NOTES, "$_ID = ?", arrayOf(uri.lastPathSegment))
             wrDB.close()
             context?.contentResolver?.notifyChange(uri, null)
             return linesAffect
@@ -49,7 +50,7 @@ class NotesProvider : ContentProvider() {
         if(uriMatcher.match(uri) == NOTES) {
             val wrDB = db.writableDatabase
             val rawId = wrDB?.insert(TABLE_NOTES, null, values)
-            val insertUri = Uri.withAppendedPath(BASE_URI, rawId.toString())
+            val insertUri = Uri.withAppendedPath(URI_NOTES, rawId.toString())
             wrDB.close()
             return  insertUri
         } else {
@@ -74,6 +75,7 @@ class NotesProvider : ContentProvider() {
                     null,
                     sortOrder
                 )
+                cursor.setNotificationUri(context?.contentResolver, uri)
                 cursor
             }
             uriMatcher.match(uri) == NOTE_BY_ID -> {
@@ -93,6 +95,7 @@ class NotesProvider : ContentProvider() {
                 throw UnsupportedSchemeException("Uri não implementada")
             }
         }
+
     }
 
     override fun update(
@@ -101,7 +104,7 @@ class NotesProvider : ContentProvider() {
     ): Int {
         if(uriMatcher.match(uri) == NOTE_BY_ID) {
             val wrDB = db.writableDatabase
-            var linesAffect = wrDB.update(TABLE_NOTES, values, "$_ID = ?", arrayOf(uri.lastPathSegment))
+            val linesAffect = wrDB.update(TABLE_NOTES, values, "$_ID = ?", arrayOf(uri.lastPathSegment))
             wrDB.close()
             context?.contentResolver?.notifyChange(uri, null)
             return linesAffect

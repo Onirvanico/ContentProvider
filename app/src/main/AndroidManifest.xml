@@ -8,12 +8,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ContentProvider">
+        android:theme="@style/Theme.ContentProvider"
+        android:fullBackupContent="false">
         <provider
             android:name=".sharedata.NotesProvider"
             android:authorities="com.example.contentprovider.provider"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"
